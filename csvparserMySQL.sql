@@ -1,4 +1,4 @@
-﻿CREATE DATABASE  IF NOT EXISTS `csvparser` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE  IF NOT EXISTS `csvparser` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `csvparser`;
 -- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
 --
@@ -18,6 +18,24 @@ USE `csvparser`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `detailerrors`
+--
+
+DROP TABLE IF EXISTS `detailerrors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `detailerrors` (
+  `detailErrorsID` mediumint(11) NOT NULL AUTO_INCREMENT,
+  `MapperHeaderID` mediumint(11) NOT NULL,
+  `ErrorMessage` longtext,
+  `JSONContent` longtext,
+  PRIMARY KEY (`detailErrorsID`),
+  KEY `fk_details_has_errors_idx` (`MapperHeaderID`),
+  CONSTRAINT `fk_details_has_errors` FOREIGN KEY (`MapperHeaderID`) REFERENCES `masterheader` (`masterHeaderID`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `mapperdetails`
 --
 
@@ -34,17 +52,8 @@ CREATE TABLE `mapperdetails` (
   PRIMARY KEY (`MapperDetailsID`),
   KEY `idx_mastermapperdet` (`MasterHeaderID`),
   CONSTRAINT `fk_MapperDetails_MasterHeader1` FOREIGN KEY (`MasterHeaderID`) REFERENCES `masterheader` (`masterHeaderID`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mapperdetails`
---
-
-LOCK TABLES `mapperdetails` WRITE;
-/*!40000 ALTER TABLE `mapperdetails` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mapperdetails` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `mastercolumnmapper`
@@ -56,7 +65,7 @@ DROP TABLE IF EXISTS `mastercolumnmapper`;
 CREATE TABLE `mastercolumnmapper` (
   `ColumnMapID` mediumint(11) NOT NULL AUTO_INCREMENT,
   `CSVAttrName` varchar(100) NOT NULL,
-  `TableAttrName` varchar(45) NOT NULL,
+  `TableAttrName` varchar(100) NOT NULL,
   `AttrDataType` varchar(15) DEFAULT NULL,
   `idMasterMapper` mediumint(11) NOT NULL,
   `isKeyAttr` bit(1) NOT NULL DEFAULT b'0',
@@ -65,13 +74,8 @@ CREATE TABLE `mastercolumnmapper` (
   KEY `fk_MasterColumnMapper_ValidDataTypes1_idx` (`AttrDataType`),
   CONSTRAINT `fk_MasterColumnMapper_MasterMapper1` FOREIGN KEY (`idMasterMapper`) REFERENCES `mastermapper` (`idMasterMapper`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_MasterColumnMapper_ValidDataTypes1` FOREIGN KEY (`AttrDataType`) REFERENCES `validdatatypes` (`validDataTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COMMENT='numer';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='numer';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mastercolumnmapper`
---
-
 
 --
 -- Table structure for table `masterheader`
@@ -89,15 +93,13 @@ CREATE TABLE `masterheader` (
   `processCSVFlag` bit(1) NOT NULL DEFAULT b'0',
   `processTableFlag` bit(1) NOT NULL DEFAULT b'0',
   `processCSVHeaderFlag` bit(1) NOT NULL DEFAULT b'0',
+  `columnSeparator` char(2) NOT NULL DEFAULT ',',
+  `countDetailRows` int(11) DEFAULT '0',
   PRIMARY KEY (`masterHeaderID`),
   KEY `fk_MasterHeader_MasterMapper1_idx` (`idMasterMapper`),
   CONSTRAINT `fk_MasterHeader_MasterMapper1` FOREIGN KEY (`idMasterMapper`) REFERENCES `mastermapper` (`idMasterMapper`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COMMENT='				';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='				';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `masterheader`
---
 
 --
 -- Table structure for table `mastermapper`
@@ -113,14 +115,15 @@ CREATE TABLE `mastermapper` (
   `MapperDesc` text,
   `AltForeignKey` mediumint(11) DEFAULT NULL,
   `ApiKey` varchar(45) DEFAULT NULL,
+  `countMappedColumns` int(11) DEFAULT NULL,
   PRIMARY KEY (`idMasterMapper`),
   KEY `fk_MasterMapper_vendor1_idx` (`AltForeignKey`),
   CONSTRAINT `fk_MasterMapper_vendor1` FOREIGN KEY (`AltForeignKey`) REFERENCES `vendor` (`idvendor`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `mastermapper`
+-- Table structure for table `test_table`
 --
 
 DROP TABLE IF EXISTS `test_table`;
@@ -136,8 +139,6 @@ CREATE TABLE `test_table` (
   PRIMARY KEY (`keycol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!40000 ALTER TABLE `mastermapper` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `validdatatypes`
@@ -177,4 +178,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-03-11 11:58:41
+-- Dump completed on 2015-05-01 10:29:13

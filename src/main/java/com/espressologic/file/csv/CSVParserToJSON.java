@@ -11,14 +11,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class CSVParserToJSON {
 	
+	private static char COLUMN_SEP = ',';// or '\t' or ';' or '|' etc
 	private String keyAttrName = "idMasterMapper";
 	private String altKeyAttrName = "altForeignKey";
 	//col1 = origColName col2 = replacement column
 	private Map<String,String> mappedColumns = new HashMap<String,String>();
-
+	private static String dir = "C:\\csvparser\\";
 	/*
 	 * if(row.processCSVFlag && row.content !== nulll){ 
 	 *  var csv =  new com.espressologic.file.csv.CSVParserToJSON("keycolumn");
@@ -42,14 +44,15 @@ public class CSVParserToJSON {
 		this.keyAttrName = keyName;
 		this.setMappedColumns(columnMap);
 	}
-	public CSVParserToJSON(String keyName,String altKeyName,Map<String,String> columnMap){
+	public CSVParserToJSON(String keyName, String altKeyName,
+			Map<String, String> columnMap) {
 		this.keyAttrName = keyName;
 		this.altKeyAttrName = altKeyName;
 		this.setMappedColumns(columnMap);
 	}
 
 	public static void main(String[] args) {
-		File file = new File("sample.csv");
+		File file = new File(dir + "testscv.csv");
 		
 		byte[] bFile = new byte[(int) file.length()];
 		try {
@@ -60,17 +63,20 @@ public class CSVParserToJSON {
 			for (int i = 0; i < bFile.length; i++) {
 				// System.out.print((char) bFile[i]);
 			}
-			CSVParserToJSON csv = new CSVParserToJSON("idMasterMapper","AttrDataType");
-			//csv.addColumnMap("ASIN", "asin");
-			String str = csv.convertFileToJSON(1,1, bFile);
-			System.out.println(str);
+			CSVParserToJSON csv = new CSVParserToJSON("idMasterMapper",
+					"AttrDataType");
+			CSVParserToJSON.setCOLUMN_SEP('\t');
+			csv.addColumnMap("ASIN", "asin");
+			String str2 = csv.convertFileHeaderToJSON(1 , 1, bFile);
+			System.out.println(str2);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-	public String convertFileToJSON(String keyName, int idvendor_pricelist, int altForeignKey, byte[] bytes){
+	public String convertFileToJSON(String keyName, int idvendor_pricelist,
+			int altForeignKey, byte[] bytes) {
 		keyAttrName = keyName;
 		return convertFileToJSON( idvendor_pricelist,  altForeignKey,bytes);
 	}
@@ -86,15 +92,18 @@ public class CSVParserToJSON {
 		sb.append("[");
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			it = mapper.reader(String[].class)
-					.readValues(bis);
+			mapper.schemaFor(String[].class).withColumnSeparator(COLUMN_SEP)
+					.withHeader().rebuild();
+			CsvSchema schema = mapper.schemaFor(String[].class).withoutHeader()
+					.withColumnSeparator(COLUMN_SEP);
+			it = mapper.reader(String[].class).with(schema).readValues(bis);
 			String[] row = null;
 			String[] columnHeader = null;
 
 			int rownum = 0;
 			String sep = "";
-			while (it.hasNext()) {
-				row = it.next();
+			while (it.hasNextValue()) {
+				row = it.nextValue();
 				// and voila, column values in an array. Works with Lists as
 				if (rownum == 0) {
 					// this is our first row so skip it
@@ -113,12 +122,14 @@ public class CSVParserToJSON {
 							sb.append(cs);
 							format(sb, "\"row\":", String.valueOf(rownum));
 							sb.append(cs);
-							format(sb, "\"columnName\":", quote(replaceColumnName(columnHeader[i])));
+							format(sb, "\"columnName\":",
+									quote(replaceColumnName(columnHeader[i])));
 							sb.append(cs);
 							format(sb, "\"value\":", quote(row[i]));
 							if(idKey2 > 0){
 								sb.append(cs);
-								format(sb, "\""+altKeyAttrName+"\":", String.valueOf(idKey2));
+								format(sb, "\"" + altKeyAttrName + "\":",
+										String.valueOf(idKey2));
 							}
 							sb.append("}");
 							sep = ",";
@@ -147,13 +158,17 @@ public class CSVParserToJSON {
 		sb.append("[");
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			it = mapper.reader(String[].class).readValues(bis);
+			mapper.schemaFor(String[].class).withColumnSeparator(COLUMN_SEP)
+					.rebuild();
+			CsvSchema schema = mapper.schemaFor(String[].class).withoutHeader()
+					.withColumnSeparator(COLUMN_SEP);
+			it = mapper.reader(String[].class).with(schema).readValues(bis);
 			String[] row = null;
 			String[] columnHeader = null;
 			int rownum = 0;
 			String sep = "";
-			while (it.hasNext()) {
-				row = it.next();
+			while (it.hasNextValue()) {
+				row = it.nextValue();
 				if (rownum == 0) {
 					columnHeader = row.clone();
 					String cs = ",";
@@ -164,9 +179,11 @@ public class CSVParserToJSON {
 							format(sb, "\""+keyAttrName+"\":",
 									String.valueOf(idKey1));
 							sb.append(cs);
-							format(sb, "\"CSVAttrName\":", quote((columnHeader[i])));
+							format(sb, "\"CSVAttrName\":",
+									quote((columnHeader[i])));
 							sb.append(cs);
-							format(sb, "\"TableAttrName\":", quote(modifyColumn(columnHeader[i])));
+							format(sb, "\"TableAttrName\":",
+									quote(modifyColumn(columnHeader[i])));
 							sb.append("}");
 							sep = ",";
 						}
@@ -200,6 +217,7 @@ public class CSVParserToJSON {
 	}
 	private String modifyColumn(String csvAttrName) {
 		String colName = new String(csvAttrName).replaceAll("-", "_");
+		colName = colName.replaceAll("$", "");
 		return colName.replaceAll(" ","_").toLowerCase();
 	}
 
@@ -228,4 +246,14 @@ public class CSVParserToJSON {
 	public void addColumnMap(String oldColName,String newColName){
 		this.mappedColumns.put(oldColName, newColName);
 	}
+	public static char getCOLUMN_SEP() {
+		return COLUMN_SEP;
+	}
+	public static void setCOLUMN_SEP(char separator) {
+		COLUMN_SEP = separator;
+	}
+	public static boolean isNumber(String test){return false;}
+	public static boolean isBoolean(String test){return false;}
+	public static boolean isDate(String test){return false;}
+	public static boolean isMoney(String test){return false;}
 }
