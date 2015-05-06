@@ -162,7 +162,7 @@ CREATE TABLE `validdatatypes` (
 
 LOCK TABLES `validdatatypes` WRITE;
 /*!40000 ALTER TABLE `validdatatypes` DISABLE KEYS */;
-INSERT INTO `validdatatypes` VALUES ('boolean',NULL,NULL,NULL),('custom','','return value;',NULL),('date',NULL,NULL,NULL),('MM-dd-YYYY','',NULL,NULL),('money','/[$,()]/g','(value.charAt(0) == \'(\'? -1 : 1)*parseFloat(value.replace(regex,\'\'));',NULL),('number','/[$,()]/g','(value.charAt(0) == \'(\'? -1 : 1)*Number(value.replace(regex,\'\'));',NULL),('text',NULL,NULL,'this is the default - nothing to do here ');
+INSERT INTO `validdatatypes` VALUES ('boolean',NULL,NULL,NULL),('custom','','return value;',NULL),('date',NULL,NULL,NULL),('MM-dd-YYYY','',NULL,NULL),('money','/[$,()]/g','(value.charAt(0) == \'(\'? -1 : 1)*parseFloat(value.replace(regex,\'\'));',NULL),('number','/[$,()]/g','(value.charAt(0) == \'(\'? -1 : 1)*Number(value.replace(regex,\'\'));',NULL),('text',NULL,NULL,'this is the default - nothing to do here '),('percent',NULL,NULL,'');
 /*!40000 ALTER TABLE `validdatatypes` ENABLE KEYS */;
 UNLOCK TABLES;
 

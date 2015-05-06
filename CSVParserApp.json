@@ -1,7 +1,7 @@
 [
   {
     "ident": 1004,
-    "ts": "2015-04-27T17:49:28.590152Z",
+    "ts": "2015-04-27T21:49:28.590152Z",
     "exportVersion": "v4",
     "adminSchemaVersion": "20150422",
     "name": "CSVParserApp",
@@ -13,7 +13,7 @@
     "authprovider_ident": 1000,
     "@metadata": {
       "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport/1004",
-      "checksum": "A:c549e50247a1e1e7",
+      "checksum": "A:29427f212459f11b",
       "nonpersistent": [
         "exportVersion",
         "adminSchemaVersion"
@@ -23,8 +23,8 @@
     ],
     "Rules": [
       {
-        "ident": 1043,
-        "ts": "2015-04-27T17:46:38.922255Z",
+        "ident": 1054,
+        "ts": "2015-05-05T20:42:56.67012Z",
         "entity_name": "main:mastercolumnmapper",
         "attribute_name": "AttrDataType",
         "prop1": null,
@@ -32,29 +32,29 @@
         "prop3": null,
         "prop4": "javascript",
         "prop5": null,
-        "rule_text1": "var newrow = row.AttrDataType;\nif(newrow === null){\n    newrow = row.AttrDataType = \"text\";\n}\nreturn newrow;",
+        "rule_text1": "var ans = row.AttrDataType;\nif(row.AttrDataType === null){\n    ans = 'text'; //DEFAULT\n    if(row.TableAttrName.indexOf(\"amount\") > -1 \n     || row.TableAttrName.indexOf('tax') > -1\n      || row.TableAttrName.indexOf('price') > -1\n      || row.TableAttrName.indexOf('weight') > -1\n      || row.TableAttrName.indexOf('fee') > -1\n      || row.TableAttrName.indexOf('dimension') > -1\n      || row.TableAttrName.indexOf('length') > -1\n      || row.TableAttrName.indexOf('sales') > -1) {\n        ans = 'money';\n    } else {\n        if(row.TableAttrName.indexOf('date') > -1) {\n            ans = 'date';\n        } else {\n            if(row.TableAttrName.indexOf(\"percent\") > -1) {\n                ans = 'percent';\n            } else {\n                if(row.TableAttrName.indexOf('unit') > -1 \n                    || row.TableAttrName.indexOf('items') > -1 \n                    || row.TableAttrName.indexOf('session') > -1) {\n                    ans = 'number';\n                } \n            }\n        }\n    }\n}\n\nreturn ans;",
         "rule_text2": null,
         "rule_text3": null,
         "rule_text4": null,
         "rule_text5": null,
         "predicate": null,
-        "name": "Default DataType",
-        "auto_name": "Derive AttrDataType as var newrow = row.AttrDataType;\nif(newrow === null){\n    newrow = row.AttrDataType = \"text\";\n}\nreturn newrow;",
+        "name": "Set Default DataType",
+        "auto_name": "Derive AttrDataType as var ans = row.AttrDataType;\nif(row.AttrDataType === null){\n    ans = 'text'; //DEFAULT\n    if(row.TableAttrName.indexOf(\"amo...",
         "verbs": null,
         "comments": null,
         "active": true,
         "project_ident": 1004,
         "ruletype_ident": 3,
         "@metadata": {
-          "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1043",
-          "checksum": "A:c8c315a6fb59068f"
+          "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1054",
+          "checksum": "A:797f3ab8e676b682"
         },
         "RuleTopics": [
         ]
       },
       {
         "ident": 1044,
-        "ts": "2015-05-01T10:23:18.950583Z",
+        "ts": "2015-05-05T19:07:43.484138Z",
         "entity_name": "main:masterheader",
         "attribute_name": null,
         "prop1": null,
@@ -62,13 +62,13 @@
         "prop3": null,
         "prop4": "javascript",
         "prop5": null,
-        "rule_text1": "\r\nif(row.processCSVFlag == 1  && oldRow.processCSVFlag === false &&  row.content !== null){\r\n    \r\n    log.debug(\"Start CSV Process to details\");\r\n    var parms = null;\r\n    var settings = {\r\n        headers: {\"Authorization\": \"Espresso \"+row.fk_MasterHeader_MasterMapper1.ApiKey+\":123\"}\r\n    };\r\n    var csvParser = new com.espressologic.file.csv.CSVParserToJSON(\"idMasterMapper\");\r\n    csvParser.setCOLUMN_SEP(row.columnSeparator);\r\n    var header = csvParser.convertFileHeaderToJSON(row.idMasterMapper , 1, row.content);\r\n    var columnMap = SysUtility.getResource(\"columnMap\",{filter: {mastercolumnmapper: \"idMasterMapper = \"+ row.idMasterMapper}});\r\n    if(Array.isArray(columnMap) && columnMap.length <= 0){\r\n        log.debug(\"insert header to master column mapper\");\r\n        var headerData =  JSON.parse(header);\r\n        var urlh = req.baseUrl+\"v1/main:mastercolumnmapper\";\r\n        var postHeader = SysUtility.restPost(urlh,parms,settings,headerData);\r\n        log.debug(postHeader);\r\n        columnMap = SysUtility.getResource(\"columnMap\",{filter: {mastercolumnmapper: \"idMasterMapper = \"+ row.idMasterMapper}});\r\n        \r\n    } \r\n   csvParser = new com.espressologic.file.csv.CSVParserToJSON(\"MasterHeaderID\",\"altForeignKey\");\r\n   csvParser.setCOLUMN_SEP(row.columnSeparator);\r\n   if(Array.isArray(columnMap) && columnMap.length > 0){\r\n        log.debug(\"use map column headers to transform to real column names\");\r\n        for (var i = 0; i < columnMap.length; i++) {\r\n            csvParser.addColumnMap(columnMap[i].CSVAttrName ,columnMap[i].TableAttrName );\r\n        }\r\n   }\r\n    \r\n    var result = csvParser.convertFileToJSON(row.masterHeaderID,1,row.content);\r\n   // this can be very large\r\n   // log.debug(result);\r\n    var json = JSON.parse(result);\r\n\r\n    //restPOST is async with this transaction\r\n    var url = req.baseUrl+\"v1/main:mapperdetails\";\r\n    log.debug(url);\r\n    var post = SysUtility.restPost(url,parms,settings,json);\r\n    //we should log this to a hisotry table/field\r\n    var jsonPost = JSON.parse(post);\r\n        if(jsonPost.statusCode > 201){\r\n            log.debug(post);\r\n            var errorJSON = {\r\n                MapperHeaderID: row.masterHeaderID,\r\n                ErrorMessage: post.message,\r\n                JSONContent: JSON.stringify(json,2,null)\r\n            };\r\n            var esettings = {\r\n                headers: {\"Authorization\": \"Espresso WUyXwrLEgvhMxhUYYHhI:123\"}\r\n            };\r\n            var errorURL = req.baseUrl+\"v1/main:detailerrors\";\r\n            log.debug(errorURL);\r\n            SysUtility.restPost(errorURL,null,esettings,errorJSON);\r\n        }\r\n    \r\n}",
+        "rule_text1": "\r\nif(row.processCSVFlag == 1  && oldRow.processCSVFlag === false &&  row.content !== null){\r\n    \r\n    log.debug(\"Start CSV Process to details\");\r\n    var parms = null;\r\n    var settings = {\r\n        headers: {\"Authorization\": \"Espresso \"+row.fk_MasterHeader_MasterMapper1.ApiKey+\":123\"}\r\n    };\r\n    var csvParser = new com.espressologic.file.csv.CSVParserToJSON(\"idMasterMapper\");\r\n    csvParser.setCOLUMN_SEP(row.columnSeparator);\r\n    var header = csvParser.convertFileHeaderToJSON(row.idMasterMapper , 1, row.content);\r\n    var columnMap = SysUtility.getResource(\"columnMap\",{filter: {mastercolumnmapper: \"idMasterMapper = \"+ row.idMasterMapper}});\r\n    if(Array.isArray(columnMap) && columnMap.length <= 0){\r\n        log.debug(\"insert header to master column mapper\");\r\n        var headerData =  JSON.parse(header);\r\n        var urlh = req.baseUrl+\"v1/main:mastercolumnmapper\";\r\n        var postHeader = SysUtility.restPost(urlh,parms,settings,headerData);\r\n        log.debug(postHeader);\r\n        columnMap = SysUtility.getResource(\"columnMap\",{filter: {mastercolumnmapper: \"idMasterMapper = \"+ row.idMasterMapper}});\r\n        \r\n    } \r\n   csvParser = new com.espressologic.file.csv.CSVParserToJSON(\"MasterHeaderID\",\"altForeignKey\");\r\n   csvParser.setCOLUMN_SEP(row.columnSeparator);\r\n   if(Array.isArray(columnMap) && columnMap.length > 0){\r\n        log.debug(\"use map column headers to transform to real column names\");\r\n        for (var i = 0; i < columnMap.length; i++) {\r\n            csvParser.addColumnMap(columnMap[i].CSVAttrName ,columnMap[i].TableAttrName );\r\n        }\r\n   }\r\n    \r\n    csvParser.convertFileToJSON(row.masterHeaderID,1,row.content);\r\n    var batch = [];\r\n    var totalRecordCount = csvParser.getTotalRecordCount();\r\n    log.debug(\"total row count \"+totalRecordCount);\r\n    var url = req.baseUrl+\"v1/main:mapperdetails\";\r\n   // this can be very large\r\n   // log.debug(result);\r\n    var batchLimit = totalRecordCount > 20?20:totalRecordCount;\r\n    var rowCount = 1;\r\n    var json = {};\r\n    var i = 1\r\n    while( i <= totalRecordCount){\r\n        \r\n            json = csvParser.getBatch(i,batchLimit);\r\n            log.debug(json);\r\n            batch = JSON.parse(json);\r\n            log.debug(\"i = \"+i +\" batch \"+batchLimit);\r\n            var post = SysUtility.restPost(url,parms,settings,batch);\r\n            //we should log this to a hisotry table/field\r\n            var jsonPost = JSON.parse(post);\r\n            if(jsonPost.statusCode > 201){\r\n                log.debug(\"row [\"+i+\"] \");\r\n                log.debug(post);\r\n                var errorJSON = {\r\n                    MapperHeaderID: row.masterHeaderID,\r\n                    ErrorMessage: jsonPost.errorMessage,\r\n                    JSONContent: JSON.stringify(batch,2,null)\r\n                };\r\n                var esettings = {\r\n                    headers: {\"Authorization\": \"Espresso WUyXwrLEgvhMxhUYYHhI:123\"}\r\n                };\r\n                var errorURL = req.baseUrl+\"v1/main:detailerrors\";\r\n                log.debug(errorURL);\r\n                SysUtility.restPost(errorURL,null,esettings,errorJSON);\r\n            }\r\n            \r\n        \r\n        i = i + batchLimit;\r\n        batch = [];\r\n       // break;//test 1  batch\r\n    }\r\n}",
         "rule_text2": null,
         "rule_text3": null,
         "rule_text4": null,
         "rule_text5": null,
         "predicate": null,
-        "name": "Process File Content",
+        "name": "Process File Content (DetailRows)",
         "auto_name": "Event: \r\nif(row.processCSVFlag == 1  && oldRow.processCSVFlag === false &&  row.content !== null){\r\n    \r\n    log.debug(\"Start CSV Process to detai...",
         "verbs": "UPDATE,",
         "comments": null,
@@ -77,14 +77,14 @@
         "ruletype_ident": 7,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1044",
-          "checksum": "A:5b1f86a8f0d5d546"
+          "checksum": "A:6b878c6712113fbe"
         },
         "RuleTopics": [
         ]
       },
       {
         "ident": 1045,
-        "ts": "2015-05-01T10:23:03.326503Z",
+        "ts": "2015-05-05T19:35:08.365929Z",
         "entity_name": "main:masterheader",
         "attribute_name": null,
         "prop1": null,
@@ -92,7 +92,7 @@
         "prop3": null,
         "prop4": "javascript",
         "prop5": null,
-        "rule_text1": "//If the isKeyAttr flag is set to 1 (true) - then we use the action: MERGE_INSERT using PUT\r\nif(row.processTableFlag == 1 && oldRow.processTableFlag !== 1){\r\n    //STEP 1 - Get the Mapping Rows\r\n    var rowNum = 1;\r\n    var tableArray = [];\r\n    var value;\r\n    var offset = 0;\r\n    var jsonRow = {};\r\n    var parms = null;\r\n    var keyattrname = \"\";\r\n    var url = req.baseUrl;\r\n    url = row.fk_MasterHeader_MasterMapper1.TargetTable;\r\n    var settings = {\r\n        headers: {\"Authorization\": \"Espresso \"+row.fk_MasterHeader_MasterMapper1.ApiKey+\":123\"}\r\n    };\r\n    var mapRows = SysUtility.getResource(\"columnMap\",\r\n        {filter: \"idMasterMapper = \"+row.idMasterMapper,\r\n        pagesize: 200,\r\n        offset: 0});\r\n        //log.debug(JSON.stringify(mapRows[0],null,2));\r\n    var batchSize = new java.lang.Integer(mapRows.length).intValue() ; // needs to be large enough for 1 complete row\r\n    var pgsize =  batchSize;   \r\n    log.debug(\"batch size = \"+ pgsize);\r\n    //STEP 2 - get the map detail list rows 100 at a time\r\n    var detailRows = SysUtility.getResource(\"mapDetails\",\r\n        {filter: \"MasterHeaderID = \"+row.masterHeaderID  +' and row ='+rowNum,\r\n        order: \"row asc\",\r\n        pagesize: pgsize,\r\n        offset: offset});\r\n//STEP 3 - convert each row set into a JSON insert for target tablet - only select the mapRows\r\n while(Array.isArray(detailRows) && detailRows.length > 0){\r\n\r\n    for (var i = 0; i < detailRows.length; i++){\r\n        //loop over the map and insert values into json record\r\n        for (var j = 0; j < mapRows.length; j++){\r\n             if(detailRows[i].columnName === mapRows[j].TableAttrName\r\n             || detailRows[i].columnName === mapRows[j].CSVAttrName){\r\n               try{\r\n                   if( mapRows[j].isKeyAttr){\r\n                         keyattrname = mapRows[j].TableAttrName;\r\n                   }\r\n                 value = detailRows[i].value; //text\r\n                 if(mapRows[j].AttrDataType == 'money'){\r\n                     value =  (value.charAt(0) == '('? -1 : 1)*parseFloat(value.replace(/[$,()]/g,''));\r\n                 } else {\r\n                     if(mapRows[j].AttrDataType == 'number'){\r\n                          value =  (value.charAt(0) == '('? -1 : 1)*Number(value.replace(/[$,()]/g,''));\r\n                     } else {\r\n                         if(mapRows[j].AttrDataType == 'date'){\r\n                             var sdf =\"YYYY-MM-D\";//output witout time\r\n                            var m = moment(value);\r\n                             value = m.format(sdf);// new java.text.SimpleDateFormat(\"dd/MM/YYYY\").parse(value);\r\n                         }  else { \r\n                             if(mapRows[j].AttrDataType == 'boolean'){\r\n                                 value = (value == 1 || value == 'true'||  value == 'TRUE')?1:0;//true:false\r\n                            }\r\n                         }\r\n                     }\r\n                 }\r\n               }catch(e){\r\n                   log.debug(\"Conversion Error From [\"+detailRows[i].value+\"]  to [\" + value + \"] \"+e.message);\r\n                    //update or modify you regex\r\n                    value = null;\r\n                }\r\n                if(value !== null && value !== 'NULL' && value !== 'null' && value !== 'Infinite'){\r\n                    //log.debug(mapRows[j].TableAttrName +\"=\"+ value);\r\n                    jsonRow[mapRows[j].TableAttrName] = value;\r\n                }\r\n             }// endIf column name match\r\n        }// end map rows loop\r\n    }// end detailRows loop\r\n    rowNum++;\r\n   // if(rowNum  > 0){\r\n     //jsonRow[\"add any altkey here\"]=row.altForeignKey;\r\n         if(keyattrname.length > 0){\r\n             jsonRow[\"@metadata\"] = {\"action\": \"MERGE_INSERT\", \"key\": keyattrname };\r\n         }\r\n         tableArray.push(jsonRow);\r\n        // log.debug(rowNum +\":\"+JSON.stringify(jsonRow,null,2));\r\n         jsonRow = {};\r\n         \r\n  //  }\r\n    \r\n //log.debug(JSON.stringify(tableArray,null,2));\r\n //STEP 4 - post the new array to target table\r\n    if(Array.isArray(tableArray) && tableArray.length > 0){\r\n        //log.debug(url);\r\n        var post;\r\n        if(keyattrname.length > 0){\r\n            post = SysUtility.restPut(url,parms,settings,tableArray);\r\n        } else {\r\n            post = SysUtility.restPost(url,parms,settings,tableArray);\r\n        }\r\n        var jsonPost = JSON.parse(post);\r\n        if(jsonPost.statusCode > 201){\r\n            log.debug(post);\r\n            var errorJSON = {\r\n                MapperHeaderID: row.masterHeaderID,\r\n                ErrorMessage: post.message,\r\n                JSONContent: JSON.stringify(tableArray,2,null)\r\n            };\r\n            var esettings = {\r\n                headers: {\"Authorization\": \"Espresso WUyXwrLEgvhMxhUYYHhI:123\"}\r\n            };\r\n            var errorURL = req.baseUrl+\"v1/main:detailerrors\";\r\n            log.debug(errorURL);\r\n            SysUtility.restPost(errorURL,null,esettings,errorJSON);\r\n        }\r\n        //break;//test 1 batch\r\n    }\r\n    \r\n    detailRows = SysUtility.getResource(\"mapDetails\",\r\n        {filter: \"MasterHeaderID = \"+row.masterHeaderID +' and row = '+rowNum,\r\n        order: \"row asc\",\r\n        pagesize: pgsize,\r\n        offset: offset});\r\n    tableArray = [];\r\n }//while loop\r\nrow.countDetailRows = rowNum;\r\n}",
+        "rule_text1": "//If the isKeyAttr flag is set to 1 (true) - then we use the action: MERGE_INSERT using PUT\r\nif(row.processTableFlag == 1 && oldRow.processTableFlag !== 1){\r\n    //STEP 1 - Get the Mapping Rows\r\n    var rowNum = 1;\r\n    var tableArray = [];\r\n    var value;\r\n    var offset = 0;\r\n    var jsonRow = {};\r\n    var parms = null;\r\n    var keyattrname = \"\";\r\n    var url = req.baseUrl;\r\n    url = row.fk_MasterHeader_MasterMapper1.TargetTable;\r\n    var settings = {\r\n        headers: {\"Authorization\": \"Espresso \"+row.fk_MasterHeader_MasterMapper1.ApiKey+\":123\"}\r\n    };\r\n    var mapRows = SysUtility.getResource(\"columnMap\",\r\n        {filter: \"idMasterMapper = \"+row.idMasterMapper,\r\n        pagesize:  (new java.lang.Integer(\"200\").intValue()),\r\n        offset: 0});\r\n        log.debug(\"mapRows.length: \"+mapRows.length);\r\n    log.debug(JSON.stringify(mapRows,null,2));\r\n    var batchSize = new java.lang.Integer(mapRows.length).intValue() ; // needs to be large enough for 1 complete row\r\n    var pgsize =  batchSize;   \r\n    log.debug(\"batch size = \"+ pgsize);\r\n    //STEP 2 - get the map detail list rows 100 at a time\r\n    var detailRows = SysUtility.getResource(\"mapDetails\",\r\n        {filter: \"MasterHeaderID = \"+row.masterHeaderID  +' and row ='+rowNum,\r\n        order: \"row asc\",\r\n        pagesize: pgsize,\r\n        offset: offset});\r\n//STEP 3 - convert each row set into a JSON insert for target tablet - only select the mapRows\r\n while(Array.isArray(detailRows) && detailRows.length > 0){\r\n\r\n    for (var i = 0; i < detailRows.length; i++){\r\n        //loop over the map and insert values into json record\r\n        for (var j = 0; j < mapRows.length; j++){\r\n             if(detailRows[i].columnName === mapRows[j].TableAttrName\r\n             || detailRows[i].columnName === mapRows[j].CSVAttrName){\r\n               try{\r\n                   if( mapRows[j].isKeyAttr){\r\n                         keyattrname = mapRows[j].TableAttrName;\r\n                   }\r\n                 value = detailRows[i].value; //text\r\n                 if(mapRows[j].AttrDataType == 'money'){\r\n                     value =  (value.charAt(0) == '('? -1 : 1)*parseFloat(value.replace(/[$,()]/g,''));\r\n                 } else {\r\n                     if(mapRows[j].AttrDataType == 'number'){\r\n                          value =  (value.charAt(0) == '('? -1 : 1)*Number(value.replace(/[$,()]/g,''));\r\n                     } else {\r\n                         if(mapRows[j].AttrDataType == 'date'){\r\n                             var sdf =\"YYYY-MM-D\";//output witout time\r\n                            var m = moment(value);\r\n                             value = m.format(sdf);// new java.text.SimpleDateFormat(\"dd/MM/YYYY\").parse(value);\r\n                         }  else { \r\n                             if(mapRows[j].AttrDataType == 'boolean'){\r\n                                 value = (value == 1 || value == 'true'||  value == 'TRUE')?1:0;//true:false\r\n                            } else {\r\n                                if(mapRows[j].AttrDataType == 'percent'){\r\n                                     value =  (value.charAt(0) == '('? -1 : 1)*Number(value.replace(/[%,()]/g,''));\r\n                                }\r\n                            }\r\n                         }\r\n                     }\r\n                 }\r\n               }catch(e){\r\n                   log.debug(\"Conversion Error From [\"+detailRows[i].value+\"]  to [\" + value + \"] \"+e.message);\r\n                    //update or modify you regex\r\n                    value = null;\r\n                }\r\n                if(value !== null && value !== 'NULL' && value !== 'null' && value !== 'Infinite'){\r\n                    //log.debug(mapRows[j].TableAttrName +\"=\"+ value);\r\n                    jsonRow[mapRows[j].TableAttrName] = value;\r\n                }\r\n             }// endIf column name match\r\n        }// end map rows loop\r\n    }// end detailRows loop\r\n    rowNum++;\r\n   // if(rowNum  > 0){\r\n     //jsonRow[\"add any altkey here\"]=row.altForeignKey;\r\n         if(keyattrname.length > 0){\r\n             jsonRow[\"@metadata\"] = {\"action\": \"MERGE_INSERT\", \"key\": keyattrname };\r\n         }\r\n         tableArray.push(jsonRow);\r\n        // log.debug(rowNum +\":\"+JSON.stringify(jsonRow,null,2));\r\n         jsonRow = {};\r\n         \r\n  //  }\r\n    \r\n //log.debug(JSON.stringify(tableArray,null,2));\r\n //STEP 4 - post the new array to target table\r\n    if(Array.isArray(tableArray) && tableArray.length > 0){\r\n        //log.debug(url);\r\n        var post;\r\n        if(keyattrname.length > 0){\r\n            post = SysUtility.restPut(url,parms,settings,tableArray);\r\n        } else {\r\n            post = SysUtility.restPost(url,parms,settings,tableArray);\r\n        }\r\n        var jsonPost = JSON.parse(post);\r\n        if(jsonPost.statusCode > 201){\r\n            log.debug(post);\r\n            var errorJSON = {\r\n                MapperHeaderID: row.masterHeaderID,\r\n                ErrorMessage: jsonPost.errorMessage,\r\n                JSONContent: JSON.stringify(tableArray,2,null)\r\n            };\r\n            var esettings = {\r\n                headers: {\"Authorization\": \"Espresso WUyXwrLEgvhMxhUYYHhI:123\"}\r\n            };\r\n            var errorURL = req.baseUrl+\"v1/main:detailerrors\";\r\n            log.debug(errorURL);\r\n            SysUtility.restPost(errorURL,null,esettings,errorJSON);\r\n        }\r\n       // break;//test 1 batch\r\n    }\r\n    \r\n    detailRows = SysUtility.getResource(\"mapDetails\",\r\n        {filter: \"MasterHeaderID = \"+row.masterHeaderID +' and row = '+rowNum,\r\n        order: \"row asc\",\r\n        pagesize: pgsize,\r\n        offset: offset});\r\n    tableArray = [];\r\n }//while loop\r\nrow.countDetailRows = rowNum;\r\n}",
         "rule_text2": null,
         "rule_text3": null,
         "rule_text4": null,
@@ -107,14 +107,14 @@
         "ruletype_ident": 7,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1045",
-          "checksum": "A:1fbf5d7e4a81c641"
+          "checksum": "A:7b90ca8205f32ee3"
         },
         "RuleTopics": [
         ]
       },
       {
         "ident": 1046,
-        "ts": "2015-05-01T10:15:43.088361Z",
+        "ts": "2015-05-01T14:15:43.088361Z",
         "entity_name": "main:masterheader",
         "attribute_name": null,
         "prop1": null,
@@ -137,14 +137,14 @@
         "ruletype_ident": 7,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1046",
-          "checksum": "A:74b8de49257d4426"
+          "checksum": "A:c3a080e05165fe02"
         },
         "RuleTopics": [
         ]
       },
       {
         "ident": 1047,
-        "ts": "2015-04-29T14:38:09.612551Z",
+        "ts": "2015-04-29T18:38:09.612551Z",
         "entity_name": "main:mastermapper",
         "attribute_name": "countMappedColumns",
         "prop1": null,
@@ -167,7 +167,7 @@
         "ruletype_ident": 2,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Rules/1047",
-          "checksum": "A:6a0c2416025e147d"
+          "checksum": "A:9e39f302da33650b"
         },
         "RuleTopics": [
         ]
@@ -176,53 +176,18 @@
     "ApiVersions": [
       {
         "ident": 1004,
-        "ts": "2015-04-27T17:46:38.947289Z",
+        "ts": "2015-04-27T21:46:38.947289Z",
         "name": "v1",
         "comments": "",
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions/1004",
-          "checksum": "A:a4ceb849d37d098d"
+          "checksum": "A:d06ce820875d758a"
         },
         "Resources": [
           {
-            "ident": 1053,
-            "ts": "2015-04-30T11:47:24.699711Z",
-            "resource_type_ident": 1,
-            "prefix": "main",
-            "table_name": "detailerrors",
-            "name": "NewResource",
-            "description": null,
-            "is_collection": "Y",
-            "join_condition": null,
-            "filter": null,
-            "sorting": null,
-            "attach_path": null,
-            "caching": null,
-            "custom_class": null,
-            "code_text": null,
-            "filter_code": "",
-            "serial_filter": null,
-            "prop1": null,
-            "prop2": null,
-            "prop3": null,
-            "prop4": null,
-            "prop5": null,
-            "container_ident": null,
-            "sibling_rank": 100,
-            "root_ident": null,
-            "linked_ident": null,
-            "apiversion_ident": 1004,
-            "@metadata": {
-              "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources/1053",
-              "checksum": "A:4df8ae43e290128e"
-            },
-            "ResourceAttributes": [
-            ]
-          },
-          {
             "ident": 1049,
-            "ts": "2015-04-27T17:46:39.042298Z",
+            "ts": "2015-04-27T21:46:39.042298Z",
             "resource_type_ident": 3,
             "prefix": "main",
             "table_name": "mapperdetails",
@@ -250,14 +215,14 @@
             "apiversion_ident": 1004,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources/1049",
-              "checksum": "A:7516a41241e76e2c"
+              "checksum": "A:51f7e4cde91b4294"
             },
             "ResourceAttributes": [
             ]
           },
           {
             "ident": 1050,
-            "ts": "2015-04-27T17:46:39.0463Z",
+            "ts": "2015-04-27T21:46:39.0463Z",
             "resource_type_ident": 3,
             "prefix": "main",
             "table_name": "mapperdetails",
@@ -285,14 +250,14 @@
             "apiversion_ident": 1004,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources/1050",
-              "checksum": "A:8ff30480a536af02"
+              "checksum": "A:06914d3d13b334bc"
             },
             "ResourceAttributes": [
             ]
           },
           {
             "ident": 1051,
-            "ts": "2015-04-27T17:46:39.109871Z",
+            "ts": "2015-04-27T21:46:39.109871Z",
             "resource_type_ident": 1,
             "prefix": "main",
             "table_name": "mapperdetails",
@@ -320,12 +285,12 @@
             "apiversion_ident": 1004,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources/1051",
-              "checksum": "A:ff46b1662d124201"
+              "checksum": "A:fd59902a7d560846"
             },
             "ResourceAttributes": [
               {
                 "ident": 1089,
-                "ts": "2015-04-27T17:46:39.109871Z",
+                "ts": "2015-04-27T21:46:39.109871Z",
                 "name": "MapperDetailsID",
                 "description": null,
                 "column_name": "MapperDetailsID",
@@ -336,12 +301,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1089",
-                  "checksum": "A:ff38f2e304d44f94"
+                  "checksum": "A:69eafc53667613f3"
                 }
               },
               {
                 "ident": 1090,
-                "ts": "2015-04-27T17:46:39.125482Z",
+                "ts": "2015-04-27T21:46:39.125482Z",
                 "name": "MasterHeaderID",
                 "description": null,
                 "column_name": "MasterHeaderID",
@@ -352,12 +317,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1090",
-                  "checksum": "A:dff97dcfd9b11fe0"
+                  "checksum": "A:22b8db112e597c9b"
                 }
               },
               {
                 "ident": 1091,
-                "ts": "2015-04-27T17:46:39.125482Z",
+                "ts": "2015-04-27T21:46:39.125482Z",
                 "name": "row",
                 "description": null,
                 "column_name": "row",
@@ -368,12 +333,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1091",
-                  "checksum": "A:8b28ac7241962c31"
+                  "checksum": "A:8dd89b770e446782"
                 }
               },
               {
                 "ident": 1092,
-                "ts": "2015-04-27T17:46:39.125482Z",
+                "ts": "2015-04-27T21:46:39.125482Z",
                 "name": "columnName",
                 "description": null,
                 "column_name": "columnName",
@@ -384,12 +349,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1092",
-                  "checksum": "A:993db39876621548"
+                  "checksum": "A:927984b8f7630f6f"
                 }
               },
               {
                 "ident": 1093,
-                "ts": "2015-04-27T17:46:39.125482Z",
+                "ts": "2015-04-27T21:46:39.125482Z",
                 "name": "value",
                 "description": null,
                 "column_name": "value",
@@ -400,12 +365,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1093",
-                  "checksum": "A:156164e6b2304a7e"
+                  "checksum": "A:a919567b57533b43"
                 }
               },
               {
                 "ident": 1094,
-                "ts": "2015-04-27T17:46:39.125482Z",
+                "ts": "2015-04-27T21:46:39.125482Z",
                 "name": "altForeignKey",
                 "description": null,
                 "column_name": "altForeignKey",
@@ -416,14 +381,14 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1094",
-                  "checksum": "A:0d0f66ada3ebd0b7"
+                  "checksum": "A:bd5a93158865a904"
                 }
               }
             ]
           },
           {
             "ident": 1052,
-            "ts": "2015-04-27T17:46:39.14112Z",
+            "ts": "2015-04-27T21:46:39.14112Z",
             "resource_type_ident": 1,
             "prefix": "main",
             "table_name": "mastercolumnmapper",
@@ -451,12 +416,12 @@
             "apiversion_ident": 1004,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources/1052",
-              "checksum": "A:9ef748d3dc1aab06"
+              "checksum": "A:aea46a87f8023eb9"
             },
             "ResourceAttributes": [
               {
                 "ident": 1095,
-                "ts": "2015-04-27T17:46:39.14112Z",
+                "ts": "2015-04-27T21:46:39.14112Z",
                 "name": "CSVAttrName",
                 "description": null,
                 "column_name": "CSVAttrName",
@@ -467,12 +432,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1095",
-                  "checksum": "A:2069e83182e94588"
+                  "checksum": "A:de6fe93d1dae6fe2"
                 }
               },
               {
                 "ident": 1096,
-                "ts": "2015-04-27T17:46:39.14112Z",
+                "ts": "2015-04-27T21:46:39.14112Z",
                 "name": "TableAttrName",
                 "description": null,
                 "column_name": "TableAttrName",
@@ -483,12 +448,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1096",
-                  "checksum": "A:05ca59aa412f154f"
+                  "checksum": "A:81844ded6f0a968b"
                 }
               },
               {
                 "ident": 1097,
-                "ts": "2015-04-27T17:46:39.14112Z",
+                "ts": "2015-04-27T21:46:39.14112Z",
                 "name": "AttrDataType",
                 "description": null,
                 "column_name": "AttrDataType",
@@ -499,12 +464,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1097",
-                  "checksum": "A:b3e313357adb5d6c"
+                  "checksum": "A:aa9570e3ab758283"
                 }
               },
               {
                 "ident": 1098,
-                "ts": "2015-04-27T17:46:39.14112Z",
+                "ts": "2015-04-27T21:46:39.14112Z",
                 "name": "idMasterMapper",
                 "description": null,
                 "column_name": "idMasterMapper",
@@ -515,12 +480,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1098",
-                  "checksum": "A:40075f5b5de992bf"
+                  "checksum": "A:27dcd6d9aa926f4b"
                 }
               },
               {
                 "ident": 1099,
-                "ts": "2015-04-27T17:46:39.14112Z",
+                "ts": "2015-04-27T21:46:39.14112Z",
                 "name": "ColumnMapID",
                 "description": null,
                 "column_name": "ColumnMapID",
@@ -531,12 +496,12 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1099",
-                  "checksum": "A:6795bdea92fc506f"
+                  "checksum": "A:82bf17325eaec949"
                 }
               },
               {
                 "ident": 1100,
-                "ts": "2015-04-27T17:46:39.156734Z",
+                "ts": "2015-04-27T21:46:39.156734Z",
                 "name": "isKeyAttr",
                 "description": null,
                 "column_name": "isKeyAttr",
@@ -547,7 +512,7 @@
                 "code_type": null,
                 "@metadata": {
                   "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiVersions.Resources.ResourceAttributes/1100",
-                  "checksum": "A:e8f65af39b02507e"
+                  "checksum": "A:1b8ce172a431d6a3"
                 }
               }
             ]
@@ -572,7 +537,7 @@
         "prefix": "main",
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.DbaseSchemas/1006",
-          "checksum": "A:e7a7974a638b7214"
+          "checksum": "A:4427994ad888af8d"
         },
         "TableInfos": [
         ]
@@ -581,109 +546,109 @@
     "ProjectLibraries": [
       {
         "ident": 1008,
-        "ts": "2015-04-27T17:46:39.156734Z",
+        "ts": "2015-04-27T21:46:39.156734Z",
         "logic_library_ident": 500,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1008",
-          "checksum": "A:8147238c20b408e7"
+          "checksum": "A:6d40edb09b41d668"
         },
         "Library": {
           "ident": 500,
           "name": "Moment.js (with Langs)",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/500",
-            "checksum": "A:7576441b54cd844d"
+            "checksum": "A:172f0423e821c84f"
           }
         }
       },
       {
         "ident": 1009,
-        "ts": "2015-04-27T17:46:39.172355Z",
+        "ts": "2015-04-27T21:46:39.172355Z",
         "logic_library_ident": 3,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1009",
-          "checksum": "A:5d8552a2319e7137"
+          "checksum": "A:6b8a2d226429ee09"
         },
         "Library": {
           "ident": 3,
           "name": "Apache Commons Codec",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/3",
-            "checksum": "A:77689406cb6afb92"
+            "checksum": "A:f4d2e72324aad230"
           }
         }
       },
       {
         "ident": 1010,
-        "ts": "2015-04-27T17:46:39.203637Z",
+        "ts": "2015-04-27T21:46:39.203637Z",
         "logic_library_ident": 505,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1010",
-          "checksum": "A:4b4ac69b6495ed7a"
+          "checksum": "A:5d230515d3dd2ddd"
         },
         "Library": {
           "ident": 505,
           "name": "Crypto-JS",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/505",
-            "checksum": "A:30f9afda6007d560"
+            "checksum": "A:b8d641b1505e09de"
           }
         }
       },
       {
         "ident": 1011,
-        "ts": "2015-04-27T17:46:39.21923Z",
+        "ts": "2015-04-27T21:46:39.21923Z",
         "logic_library_ident": 4,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1011",
-          "checksum": "A:77c83d9af0772ca8"
+          "checksum": "A:64ed8b1dc9d085d5"
         },
         "Library": {
           "ident": 4,
           "name": "Apache HttpComponents HttpClient",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/4",
-            "checksum": "A:fa9317852ab21096"
+            "checksum": "A:871e356dbdd66ec1"
           }
         }
       },
       {
         "ident": 1012,
-        "ts": "2015-04-27T17:46:39.273623Z",
+        "ts": "2015-04-27T21:46:39.273623Z",
         "logic_library_ident": 1,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1012",
-          "checksum": "A:90c00fe5a99d4516"
+          "checksum": "A:590384c76fc08e5d"
         },
         "Library": {
           "ident": 1,
           "name": "Apache HttpComponents HttpCore",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/1",
-            "checksum": "A:b2601f203590e746"
+            "checksum": "A:da56281845801271"
           }
         }
       },
       {
         "ident": 1013,
-        "ts": "2015-04-27T17:46:39.273623Z",
+        "ts": "2015-04-27T21:46:39.273623Z",
         "logic_library_ident": 501,
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries/1013",
-          "checksum": "A:015d7f12af0fd770"
+          "checksum": "A:af2d7af0a10c95c2"
         },
         "Library": {
           "ident": 501,
           "name": "json2",
           "@metadata": {
             "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectLibraries.Library/501",
-            "checksum": "A:56b7c2ed819a0c5f"
+            "checksum": "A:9d36e8e3fe8ba794"
           }
         }
       }
@@ -691,185 +656,185 @@
     "ProjectOptions": [
       {
         "ident": 1040,
-        "ts": "2015-04-27T17:46:39.273623Z",
+        "ts": "2015-04-27T21:46:39.273623Z",
         "option_value": "false",
         "project_ident": 1004,
         "projectoptiontype_ident": 1,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1040",
-          "checksum": "A:fd50cea3c5ff2e1b"
+          "checksum": "A:6431083cbc304cfc"
         }
       },
       {
         "ident": 1041,
-        "ts": "2015-04-27T17:46:39.30607Z",
+        "ts": "2015-04-27T21:46:39.30607Z",
         "option_value": "http://www.espressologic.com/rest/",
         "project_ident": 1004,
         "projectoptiontype_ident": 2,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1041",
-          "checksum": "A:7e79f91fa7a0efe7"
+          "checksum": "A:6e0dbcc67585437f"
         }
       },
       {
         "ident": 1042,
-        "ts": "2015-04-27T17:46:39.308071Z",
+        "ts": "2015-04-27T21:46:39.308071Z",
         "option_value": "false",
         "project_ident": 1004,
         "projectoptiontype_ident": 3,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1042",
-          "checksum": "A:f4d5f9e92765494d"
+          "checksum": "A:76b67e0cdf6fd552"
         }
       },
       {
         "ident": 1043,
-        "ts": "2015-04-27T17:46:39.311074Z",
+        "ts": "2015-04-27T21:46:39.311074Z",
         "option_value": "@metadata",
         "project_ident": 1004,
         "projectoptiontype_ident": 4,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1043",
-          "checksum": "A:4a4ef4e0763180c1"
+          "checksum": "A:1b852aac8bb58c22"
         }
       },
       {
         "ident": 1044,
-        "ts": "2015-04-27T17:46:39.314077Z",
+        "ts": "2015-04-27T21:46:39.314077Z",
         "option_value": "2000",
         "project_ident": 1004,
         "projectoptiontype_ident": 5,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1044",
-          "checksum": "A:25ad61dd24f5d71b"
+          "checksum": "A:21bb9b49af14ff17"
         }
       },
       {
         "ident": 1045,
-        "ts": "2015-04-27T17:46:39.316156Z",
+        "ts": "2015-04-27T21:46:39.316156Z",
         "option_value": "6000",
         "project_ident": 1004,
         "projectoptiontype_ident": 6,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1045",
-          "checksum": "A:4295ccc44f552ea0"
+          "checksum": "A:c1001bf5c3f09416"
         }
       },
       {
         "ident": 1046,
-        "ts": "2015-04-27T17:46:39.316156Z",
+        "ts": "2015-04-27T21:46:39.316156Z",
         "option_value": "20",
         "project_ident": 1004,
         "projectoptiontype_ident": 7,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1046",
-          "checksum": "A:717891cb47b43004"
+          "checksum": "A:c222fb3217521bd9"
         }
       },
       {
         "ident": 1047,
-        "ts": "2015-04-27T17:46:39.316156Z",
+        "ts": "2015-04-27T21:46:39.316156Z",
         "option_value": "5000",
         "project_ident": 1004,
         "projectoptiontype_ident": 8,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1047",
-          "checksum": "A:5bbc302e5c6344b1"
+          "checksum": "A:d7409d9742d41c91"
         }
       },
       {
         "ident": 1048,
-        "ts": "2015-04-27T17:46:39.316156Z",
+        "ts": "2015-04-27T21:46:39.316156Z",
         "option_value": "20",
         "project_ident": 1004,
         "projectoptiontype_ident": 9,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1048",
-          "checksum": "A:9bcf78b76416f377"
+          "checksum": "A:4e93a8186d2aa47c"
         }
       },
       {
         "ident": 1049,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": "100",
         "project_ident": 1004,
         "projectoptiontype_ident": 10,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1049",
-          "checksum": "A:e28c13b654279e7e"
+          "checksum": "A:5f13e87f803499e2"
         }
       },
       {
         "ident": 1050,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": "2000",
         "project_ident": 1004,
         "projectoptiontype_ident": 11,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1050",
-          "checksum": "A:4b04ce7d8a3d59db"
+          "checksum": "A:f67061cf02b5f7a3"
         }
       },
       {
         "ident": 1051,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": "true",
         "project_ident": 1004,
         "projectoptiontype_ident": 12,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1051",
-          "checksum": "A:9f42ac7abd2706ae"
+          "checksum": "A:7c0aa849f939c8c2"
         }
       },
       {
         "ident": 1052,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": null,
         "project_ident": 1004,
         "projectoptiontype_ident": 13,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1052",
-          "checksum": "A:166b6a67248ccc2d"
+          "checksum": "A:fafdc1533f0b1714"
         }
       },
       {
         "ident": 1053,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": null,
         "project_ident": 1004,
         "projectoptiontype_ident": 14,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1053",
-          "checksum": "A:af7fa2a4036556a6"
+          "checksum": "A:33aa4ad0bd22962e"
         }
       },
       {
         "ident": 1054,
-        "ts": "2015-04-27T17:46:39.35789Z",
+        "ts": "2015-04-27T21:46:39.35789Z",
         "option_value": null,
         "project_ident": 1004,
         "projectoptiontype_ident": 16,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1054",
-          "checksum": "A:666b8bfb70e32b18"
+          "checksum": "A:9e64bb0f2cfa03ed"
         }
       },
       {
         "ident": 1055,
-        "ts": "2015-04-27T17:46:39.373517Z",
+        "ts": "2015-04-27T21:46:39.373517Z",
         "option_value": null,
         "project_ident": 1004,
         "projectoptiontype_ident": 15,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ProjectOptions/1055",
-          "checksum": "A:933931942c4d8ae0"
+          "checksum": "A:cf340d355cc3e758"
         }
       }
     ],
     "ApiKeys": [
       {
         "ident": 1020,
-        "ts": "2015-04-27T17:46:39.373517Z",
+        "ts": "2015-04-27T21:46:39.373517Z",
         "name": "Broad access",
         "description": null,
         "apikey": "data_full",
@@ -883,12 +848,12 @@
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiKeys/1020",
-          "checksum": "A:f135b098d2b50870"
+          "checksum": "A:65721a4ae268db5b"
         }
       },
       {
         "ident": 1021,
-        "ts": "2015-04-27T17:46:39.404785Z",
+        "ts": "2015-04-27T21:46:39.404785Z",
         "name": "insertmapper",
         "description": "special internal apiKey used ony by business logic",
         "apikey": "WUyXwrLEgvhMxhUYYHhI",
@@ -902,14 +867,14 @@
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.ApiKeys/1021",
-          "checksum": "A:d701b9f6e09ff062"
+          "checksum": "A:7f0da56b1e547fe8"
         }
       }
     ],
     "Roles": [
       {
         "ident": 1009,
-        "ts": "2015-04-27T17:46:39.404785Z",
+        "ts": "2015-04-27T21:46:39.404785Z",
         "name": "APIRules",
         "description": null,
         "default_permission": "RIU",
@@ -917,7 +882,7 @@
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Roles/1009",
-          "checksum": "A:63de02c8a5673252"
+          "checksum": "A:6266437375dfe621"
         },
         "TablePermissions": [
         ],
@@ -926,19 +891,19 @@
         "ApiKeyRoles": [
           {
             "ident": 1018,
-            "ts": "2015-04-27T17:46:39.404785Z",
+            "ts": "2015-04-27T21:46:39.404785Z",
             "apikey_ident": 1021,
             "role_ident": 1009,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Roles.ApiKeyRoles/1018",
-              "checksum": "A:36cf58e9194c4f60"
+              "checksum": "A:8290cca572624565"
             }
           }
         ]
       },
       {
         "ident": 1010,
-        "ts": "2015-04-27T17:46:39.404785Z",
+        "ts": "2015-04-27T21:46:39.404785Z",
         "name": "App owner",
         "description": "Full permissions on the entire project",
         "default_permission": "A",
@@ -946,7 +911,7 @@
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Roles/1010",
-          "checksum": "A:a73d5038695b74b7"
+          "checksum": "A:b6507531c8951e5f"
         },
         "TablePermissions": [
         ],
@@ -955,12 +920,12 @@
         "ApiKeyRoles": [
           {
             "ident": 1019,
-            "ts": "2015-04-27T17:46:39.404785Z",
+            "ts": "2015-04-27T21:46:39.404785Z",
             "apikey_ident": 1020,
             "role_ident": 1010,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Roles.ApiKeyRoles/1019",
-              "checksum": "A:c9e857740a988423"
+              "checksum": "A:e43dee0ae3ab5454"
             }
           }
         ]
@@ -969,7 +934,7 @@
     "Users": [
       {
         "ident": 1005,
-        "ts": "2015-04-27T17:46:39.420392Z",
+        "ts": "2015-04-27T21:46:39.420392Z",
         "name": "demo",
         "fullname": "Demo user",
         "email": "admin@espressologic.com",
@@ -983,7 +948,7 @@
         "project_ident": 1004,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Users/1005",
-          "checksum": "A:94ed3ed57037fd4c"
+          "checksum": "A:674b9082cd0713c5"
         }
       }
     ],
@@ -1006,7 +971,7 @@
         "comments": null,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Relationships/1001",
-          "checksum": "A:18dbdba1abd879e5"
+          "checksum": "A:6afc8d05ff9f53af"
         }
       },
       {
@@ -1023,14 +988,14 @@
         "comments": null,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Relationships/1002",
-          "checksum": "A:52e94eff0320693b"
+          "checksum": "A:bb41ebdd6613bd76"
         }
       }
     ],
     "Applications": [
       {
         "ident": 1001,
-        "ts": "2015-04-27T17:46:39.46727Z",
+        "ts": "2015-04-27T21:46:39.46727Z",
         "name": "Default app",
         "description": null,
         "project_ident": 1004,
@@ -1038,7 +1003,7 @@
         "skin_ident": null,
         "@metadata": {
           "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications/1001",
-          "checksum": "A:10e41f856a2dd629"
+          "checksum": "A:1d9b4177d45729df"
         },
         "ApplicationOptions": [
         ],
@@ -1047,7 +1012,7 @@
         "ApplicationTableSettings": [
           {
             "ident": 1003,
-            "ts": "2015-04-27T17:46:39.529768Z",
+            "ts": "2015-04-27T21:46:39.529768Z",
             "table_name": "main:vendor_pricelist",
             "object_type": "table",
             "table_alias": null,
@@ -1056,12 +1021,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1003",
-              "checksum": "A:6a11687aacce56e6"
+              "checksum": "A:f06120af88d6af16"
             }
           },
           {
             "ident": 1004,
-            "ts": "2015-04-27T17:46:39.561039Z",
+            "ts": "2015-04-27T21:46:39.561039Z",
             "table_name": "main:products",
             "object_type": "table",
             "table_alias": null,
@@ -1070,12 +1035,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1004",
-              "checksum": "A:b5ffee16a26d19a0"
+              "checksum": "A:5cac7b4824c64909"
             }
           },
           {
             "ident": 1005,
-            "ts": "2015-04-27T17:46:39.576644Z",
+            "ts": "2015-04-27T21:46:39.576644Z",
             "table_name": "main:vendor_price_details",
             "object_type": "table",
             "table_alias": null,
@@ -1084,26 +1049,26 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1005",
-              "checksum": "A:3da7c6610df37cec"
+              "checksum": "A:18335c835f987780"
             }
           },
           {
             "ident": 1006,
-            "ts": "2015-04-30T10:32:39.516903Z",
+            "ts": "2015-05-05T20:50:38.576897Z",
             "table_name": "main:mastermapper",
             "object_type": "table",
             "table_alias": null,
             "table_desc": null,
-            "json": "{\"name\":\"main:mastermapper\",\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"width\":66.80206794682424,\"$$hashKey\":\"042\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":268.0989660265879,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":268.0989660265879,\"$$hashKey\":\"044\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"smallTextarea\",\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDesc\",\"$$hashKey\":\"045\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\",\"$$hashKey\":\"2TR\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}},\"gridColumns\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"width\":66.80206794682424,\"$$hashKey\":\"042\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":268.0989660265879,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":268.0989660265879,\"$$hashKey\":\"044\"}},\"scalarColumns\":{\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":268.0989660265879,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":268.0989660265879,\"$$hashKey\":\"044\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"smallTextarea\",\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDesc\",\"$$hashKey\":\"045\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\",\"$$hashKey\":\"2TR\"}},\"parentSettings\":{\"fk_MasterMapper_vendor1\":{\"name\":\"fk_MasterMapper_vendor1\",\"alias\":\"fk_MasterMapper_vendor1\",\"columnFormats\":{\"idvendor\":{\"name\":\"idvendor\",\"alias\":\"Idvendor\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterMapper_vendor1.idvendor\",\"parentRole\":\"fk_MasterMapper_vendor1\"},\"VendorName\":{\"name\":\"VendorName\",\"alias\":\"Vendor Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterMapper_vendor1.VendorName\",\"parentRole\":\"fk_MasterMapper_vendor1\"}}}},\"defaultTable\":\"main:mastermapper\",\"windows\":[\"main\",\"child\",\"form\"],\"childrenSettings\":{\"mastercolumnmapperList\":{\"name\":\"mastercolumnmapperList\",\"tableName\":\"main:mastercolumnmapper\",\"alias\":\"Column Map\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ColumnMapID\":{\"name\":\"ColumnMapID\",\"alias\":\"Column Map ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ColumnMapID\",\"width\":30.08503746131857},\"CSVAttrName\":{\"name\":\"CSVAttrName\",\"alias\":\"CSVAttr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"CSVAttrName\",\"width\":120.34014984527428},\"TableAttrName\":{\"name\":\"TableAttrName\",\"alias\":\"Table Attr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"TableAttrName\",\"width\":120.34014984527428},\"AttrDataType\":{\"name\":\"AttrDataType\",\"alias\":\"Attr Data Type\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AttrDataType\",\"width\":212.36497031518994},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\"},\"isKeyAttr\":{\"name\":\"isKeyAttr\",\"alias\":\"Is Key Attr\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"isKeyAttr\",\"width\":82.86969253294289}},\"downloadable\":false,\"gridColumns\":{\"ColumnMapID\":{\"name\":\"ColumnMapID\",\"alias\":\"Column Map ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ColumnMapID\",\"width\":30.08503746131857},\"CSVAttrName\":{\"name\":\"CSVAttrName\",\"alias\":\"CSVAttr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"CSVAttrName\",\"width\":120.34014984527428},\"TableAttrName\":{\"name\":\"TableAttrName\",\"alias\":\"Table Attr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"TableAttrName\",\"width\":120.34014984527428},\"AttrDataType\":{\"name\":\"AttrDataType\",\"alias\":\"Attr Data Type\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AttrDataType\",\"width\":212.36497031518994},\"isKeyAttr\":{\"name\":\"isKeyAttr\",\"alias\":\"Is Key Attr\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"isKeyAttr\",\"width\":82.86969253294289}},\"parentSettings\":{\"fk_MasterColumnMapper_ValidDataTypes1\":{\"alias\":\"main:validdatatypes\",\"columnFormats\":{\"validDataTypes\":{\"name\":\"validDataTypes\",\"alias\":\"Valid Data Types\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_ValidDataTypes1.validDataTypes\",\"parentRole\":\"fk_MasterColumnMapper_ValidDataTypes1\"},\"regex\":{\"name\":\"regex\",\"alias\":\"Regex\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"regex\"},\"evalExpression\":{\"name\":\"evalExpression\",\"alias\":\"Eval Expression\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"evalExpression\"},\"Comments\":{\"name\":\"Comments\",\"alias\":\"Comments\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"Comments\"}}},\"fk_MasterColumnMapper_MasterMapper1\":{\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"masterheaderList\":{\"name\":\"masterheaderList\",\"tableName\":\"main:masterheader\",\"alias\":\"Masterheader\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":83.28571428571429},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":166.57142857142858},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"width\":333.14285714285717},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}},\"downloadable\":false,\"gridColumns\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":83.28571428571429},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":166.57142857142858},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"width\":333.14285714285717}},\"parentSettings\":{\"fk_MasterHeader_MasterMapper1\":{\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[{\"title\":\"Start Here - define a new map\",\"columns\":[\"MapName\",\"TargetTable\",\"MapperDesc\",\"ApiKey\"],\"$$hashKey\":\"1T6\"}],\"labelPlacement\":\"Left\"}",
+            "json": "{\"name\":\"main:mastermapper\",\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"width\":52.701088680439575,\"$$hashKey\":\"042\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":211.14945565978022,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL \",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":211.14945565978022,\"$$hashKey\":\"044\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"smallTextarea\",\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDesc\",\"$$hashKey\":\"045\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\",\"$$hashKey\":\"2TR\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\",\"$$hashKey\":\"3QA\"}},\"gridColumns\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"width\":52.701088680439575,\"$$hashKey\":\"042\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":211.14945565978022,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL \",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":211.14945565978022,\"$$hashKey\":\"044\"}},\"scalarColumns\":{\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapName\",\"width\":211.14945565978022,\"$$hashKey\":\"043\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target URL \",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"TargetTable\",\"width\":211.14945565978022,\"$$hashKey\":\"044\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"smallTextarea\",\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDesc\",\"$$hashKey\":\"045\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\",\"$$hashKey\":\"2TR\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\",\"$$hashKey\":\"3QA\"}},\"parentSettings\":{\"fk_MasterMapper_vendor1\":{\"name\":\"fk_MasterMapper_vendor1\",\"alias\":\"fk_MasterMapper_vendor1\",\"columnFormats\":{\"idvendor\":{\"name\":\"idvendor\",\"alias\":\"Idvendor\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterMapper_vendor1.idvendor\",\"parentRole\":\"fk_MasterMapper_vendor1\"},\"VendorName\":{\"name\":\"VendorName\",\"alias\":\"Vendor Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterMapper_vendor1.VendorName\",\"parentRole\":\"fk_MasterMapper_vendor1\"}}}},\"defaultTable\":\"main:mastermapper\",\"windows\":[\"main\",\"child\",\"form\"],\"childrenSettings\":{\"mastercolumnmapperList\":{\"name\":\"mastercolumnmapperList\",\"tableName\":\"main:mastercolumnmapper\",\"alias\":\"Column Map\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ColumnMapID\":{\"name\":\"ColumnMapID\",\"alias\":\"Column Map ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ColumnMapID\",\"width\":24.238122053641817},\"CSVAttrName\":{\"name\":\"CSVAttrName\",\"alias\":\"CSVAttr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"CSVAttrName\",\"width\":96.95248821456727},\"TableAttrName\":{\"name\":\"TableAttrName\",\"alias\":\"Table Attr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"TableAttrName\",\"width\":96.95248821456727},\"AttrDataType\":{\"name\":\"AttrDataType\",\"alias\":\"Attr Data Type\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AttrDataType\",\"width\":171.09262626100107},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\"},\"isKeyAttr\":{\"name\":\"isKeyAttr\",\"alias\":\"Is Key Attr\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"isKeyAttr\",\"width\":66.76427525622253}},\"downloadable\":false,\"gridColumns\":{\"ColumnMapID\":{\"name\":\"ColumnMapID\",\"alias\":\"Column Map ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ColumnMapID\",\"width\":24.238122053641817},\"CSVAttrName\":{\"name\":\"CSVAttrName\",\"alias\":\"CSVAttr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"CSVAttrName\",\"width\":96.95248821456727},\"TableAttrName\":{\"name\":\"TableAttrName\",\"alias\":\"Table Attr Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"TableAttrName\",\"width\":96.95248821456727},\"AttrDataType\":{\"name\":\"AttrDataType\",\"alias\":\"Attr Data Type\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AttrDataType\",\"width\":171.09262626100107},\"isKeyAttr\":{\"name\":\"isKeyAttr\",\"alias\":\"Is Key Attr\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"isKeyAttr\",\"width\":66.76427525622253}},\"parentSettings\":{\"fk_MasterColumnMapper_ValidDataTypes1\":{\"alias\":\"main:validdatatypes\",\"columnFormats\":{\"validDataTypes\":{\"name\":\"validDataTypes\",\"alias\":\"Valid Data Types\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_ValidDataTypes1.validDataTypes\",\"parentRole\":\"fk_MasterColumnMapper_ValidDataTypes1\"},\"regex\":{\"name\":\"regex\",\"alias\":\"Regex\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"regex\"},\"evalExpression\":{\"name\":\"evalExpression\",\"alias\":\"Eval Expression\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"evalExpression\"},\"Comments\":{\"name\":\"Comments\",\"alias\":\"Comments\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"Comments\"}}},\"fk_MasterColumnMapper_MasterMapper1\":{\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterColumnMapper_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterColumnMapper_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"masterheaderList\":{\"name\":\"masterheaderList\",\"tableName\":\"main:masterheader\",\"alias\":\"Masterheader\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":65.14285714285715},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":130.2857142857143},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"width\":260.5714285714286},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}},\"downloadable\":false,\"gridColumns\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":65.14285714285715},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":130.2857142857143},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"width\":260.5714285714286}},\"parentSettings\":{\"fk_MasterHeader_MasterMapper1\":{\"alias\":\"main:mastermapper\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[{\"title\":\"Start Here - define a new map\",\"columns\":[\"MapName\",\"TargetTable\",\"MapperDesc\",\"ApiKey\",\"countMappedColumns\"],\"$$hashKey\":\"1T6\"}],\"labelPlacement\":\"Left\"}",
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1006",
-              "checksum": "A:81bcc5aad8cf3afd"
+              "checksum": "A:128c9bfc2c3fccce"
             }
           },
           {
             "ident": 1007,
-            "ts": "2015-04-27T17:46:39.592271Z",
+            "ts": "2015-04-27T21:46:39.592271Z",
             "table_name": "main:mapperdetails",
             "object_type": "table",
             "table_alias": null,
@@ -1112,12 +1077,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1007",
-              "checksum": "A:d201c42b801dec6c"
+              "checksum": "A:f9bb2bb6ac4b98c2"
             }
           },
           {
             "ident": 1008,
-            "ts": "2015-04-29T12:51:10.487887Z",
+            "ts": "2015-04-29T16:51:10.487887Z",
             "table_name": "main:mastercolumnmapper",
             "object_type": "table",
             "table_alias": null,
@@ -1126,12 +1091,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1008",
-              "checksum": "A:91ffc5bd8061beda"
+              "checksum": "A:bc97f59907c6cb98"
             }
           },
           {
             "ident": 1009,
-            "ts": "2015-04-27T17:46:39.666473Z",
+            "ts": "2015-04-27T21:46:39.666473Z",
             "table_name": "main:inventory",
             "object_type": "table",
             "table_alias": null,
@@ -1140,26 +1105,26 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1009",
-              "checksum": "A:694fafd3a1fcd259"
+              "checksum": "A:6d8955e2c0c34d2b"
             }
           },
           {
             "ident": 1010,
-            "ts": "2015-04-30T10:32:42.632366Z",
+            "ts": "2015-05-05T20:51:39.554987Z",
             "table_name": "main:masterheader",
             "object_type": "table",
             "table_alias": null,
             "table_desc": null,
-            "json": "{\"name\":\"main:masterheader\",\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":100.42462845010616,\"$$hashKey\":\"046\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"$$hashKey\":\"047\",\"width\":123.42694286044538},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"$$hashKey\":\"049\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\",\"$$hashKey\":\"04A\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\",\"$$hashKey\":\"1CN\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}},\"gridColumns\":{\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"fk_MasterHeader_MasterMapper1/MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":100.42462845010616,\"$$hashKey\":\"046\"}},\"scalarColumns\":{\"fk_MasterHeader_MasterMapper1/MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"$$hashKey\":\"049\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\",\"$$hashKey\":\"04A\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":100.42462845010616,\"$$hashKey\":\"046\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"$$hashKey\":\"047\",\"width\":123.42694286044538},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\",\"$$hashKey\":\"1CN\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}},\"parentSettings\":{\"fk_MasterHeader_MasterMapper1\":{\"name\":\"fk_MasterHeader_MasterMapper1\",\"alias\":\"fk_MasterHeader_MasterMapper1\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"defaultTable\":false,\"windows\":[\"main\",\"child\",\"form\"],\"childrenSettings\":{\"mapperdetailsList\":{\"name\":\"mapperdetailsList\",\"tableName\":\"main:mapperdetails\",\"alias\":\"Mapperdetails\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"MapperDetailsID\":{\"name\":\"MapperDetailsID\",\"alias\":\"Mapper Details ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDetailsID\",\"width\":106.66666666666667},\"MasterHeaderID\":{\"name\":\"MasterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MasterHeaderID\"},\"row\":{\"name\":\"row\",\"alias\":\"Row\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"row\",\"width\":51.77142857142858},\"columnName\":{\"name\":\"columnName\",\"alias\":\"Column Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnName\",\"width\":207.08571428571432},\"value\":{\"name\":\"value\",\"alias\":\"Value\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"value\",\"width\":194.14285714285705},\"altForeignKey\":{\"name\":\"altForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"altForeignKey\"}},\"downloadable\":false,\"gridColumns\":{\"row\":{\"name\":\"row\",\"alias\":\"Row\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"row\",\"width\":51.77142857142858},\"columnName\":{\"name\":\"columnName\",\"alias\":\"Column Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnName\",\"width\":207.08571428571432},\"value\":{\"name\":\"value\",\"alias\":\"Value\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"value\",\"width\":194.14285714285705}},\"parentSettings\":{\"fk_MapperDetails_MasterHeader1\":{\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.masterHeaderID\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.idMasterMapper\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.fileImportDate\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.filename\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.content\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.processCSVFlag\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.processTableFlag\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"detailerrorsList\":{\"name\":\"detailerrorsList\",\"tableName\":\"main:detailerrors\",\"alias\":\"Detailerrors\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"detailErrorsID\":{\"name\":\"detailErrorsID\",\"alias\":\"Detail Errors ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"detailErrorsID\",\"width\":50.33333333333333},\"MapperHeaderID\":{\"name\":\"MapperHeaderID\",\"alias\":\"Mapper Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperHeaderID\"},\"ErrorMessage\":{\"name\":\"ErrorMessage\",\"alias\":\"Error Message\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ErrorMessage\",\"width\":201.33333333333331},\"JSONContent\":{\"name\":\"JSONContent\",\"alias\":\"JSONContent\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"JSONContent\",\"width\":201.33333333333331}},\"downloadable\":false,\"gridColumns\":{\"detailErrorsID\":{\"name\":\"detailErrorsID\",\"alias\":\"Detail Errors ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"detailErrorsID\",\"width\":50.33333333333333},\"ErrorMessage\":{\"name\":\"ErrorMessage\",\"alias\":\"Error Message\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ErrorMessage\",\"width\":201.33333333333331},\"JSONContent\":{\"name\":\"JSONContent\",\"alias\":\"JSONContent\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"JSONContent\",\"width\":201.33333333333331}},\"parentSettings\":{\"fk_details_has_errors\":{\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.masterHeaderID\",\"parentRole\":\"fk_details_has_errors\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.idMasterMapper\",\"parentRole\":\"fk_details_has_errors\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.fileImportDate\",\"parentRole\":\"fk_details_has_errors\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.filename\",\"parentRole\":\"fk_details_has_errors\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.content\",\"parentRole\":\"fk_details_has_errors\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processCSVFlag\",\"parentRole\":\"fk_details_has_errors\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processTableFlag\",\"parentRole\":\"fk_details_has_errors\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processCSVHeaderFlag\",\"parentRole\":\"fk_details_has_errors\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.columnSeparator\",\"parentRole\":\"fk_details_has_errors\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.countDetailRows\",\"parentRole\":\"fk_details_has_errors\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[{\"title\":\"Create a new Record and the Upload the content.\",\"columns\":[\"fk_MasterHeader_MasterMapper1/MapName\",\"filename\",\"fileImportDate\",\"content\",\"processCSVHeaderFlag\",\"processCSVFlag\",\"processTableFlag\",\"masterHeaderID\",\"idMasterMapper\",\"columnSeparator\",\"countDetailRows\"],\"$$hashKey\":\"0ZA\"}],\"labelPlacement\":\"Left\",\"expressedTitle\":\"Form Title\"}",
+            "json": "{\"name\":\"main:masterheader\",\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":100.42462845010616,\"$$hashKey\":\"046\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"idMasterMapper\",\"$$hashKey\":\"047\",\"width\":123.42694286044538},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"$$hashKey\":\"049\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\",\"$$hashKey\":\"04A\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\",\"$$hashKey\":\"1CN\",\"default\":\"\\\\t\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Detail Row Cnt\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\",\"$$hashKey\":\"1O4\"}},\"gridColumns\":{\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"fk_MasterHeader_MasterMapper1/MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"masterHeaderID\",\"width\":100.42462845010616,\"$$hashKey\":\"046\"}},\"scalarColumns\":{\"fk_MasterHeader_MasterMapper1/MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"filename\",\"$$hashKey\":\"049\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":\"MMM d, y\",\"maskType\":\"date\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"fileImportDate\",\"width\":61.259023354564754,\"$$hashKey\":\"048\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"content\",\"$$hashKey\":\"04A\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Create Header\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\",\"width\":55.233545647558394,\"$$hashKey\":\"10K\",\"default\":\"0\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Create Details\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVFlag\",\"$$hashKey\":\"04B\",\"width\":20.084925690021233,\"default\":\"0\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Insert Table \",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processTableFlag\",\"$$hashKey\":\"04C\",\"width\":20.084925690021233,\"default\":\"0\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":\"text\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\",\"$$hashKey\":\"1CN\",\"default\":\"\\\\t\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Detail Row Cnt\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":\"numeric\",\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\",\"$$hashKey\":\"1O4\"}},\"parentSettings\":{\"fk_MasterHeader_MasterMapper1\":{\"name\":\"fk_MasterHeader_MasterMapper1\",\"alias\":\"fk_MasterHeader_MasterMapper1\",\"columnFormats\":{\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.idMasterMapper\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapName\":{\"name\":\"MapName\",\"alias\":\"Map Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapName\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\",\"width\":215.91295116772824,\"$$hashKey\":\"10J\"},\"TargetTable\":{\"name\":\"TargetTable\",\"alias\":\"Target Table\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.TargetTable\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"MapperDesc\":{\"name\":\"MapperDesc\",\"alias\":\"Mapper Desc\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MasterHeader_MasterMapper1.MapperDesc\",\"parentRole\":\"fk_MasterHeader_MasterMapper1\"},\"AltForeignKey\":{\"name\":\"AltForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"AltForeignKey\"},\"ApiKey\":{\"name\":\"ApiKey\",\"alias\":\"Api Key\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ApiKey\"},\"countMappedColumns\":{\"name\":\"countMappedColumns\",\"alias\":\"Count Mapped Columns\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countMappedColumns\"}}}},\"defaultTable\":false,\"windows\":[\"main\",\"child\",\"form\"],\"childrenSettings\":{\"mapperdetailsList\":{\"name\":\"mapperdetailsList\",\"tableName\":\"main:mapperdetails\",\"alias\":\"Mapperdetails\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"MapperDetailsID\":{\"name\":\"MapperDetailsID\",\"alias\":\"Mapper Details ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperDetailsID\",\"width\":106.66666666666667},\"MasterHeaderID\":{\"name\":\"MasterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MasterHeaderID\"},\"row\":{\"name\":\"row\",\"alias\":\"Row\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"row\",\"width\":56.22857142857144},\"columnName\":{\"name\":\"columnName\",\"alias\":\"Column Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnName\",\"width\":224.91428571428577},\"value\":{\"name\":\"value\",\"alias\":\"Value\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"value\",\"width\":210.8571428571428},\"altForeignKey\":{\"name\":\"altForeignKey\",\"alias\":\"Alt Foreign Key\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"altForeignKey\"}},\"downloadable\":false,\"gridColumns\":{\"row\":{\"name\":\"row\",\"alias\":\"Row\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"row\",\"width\":56.22857142857144},\"columnName\":{\"name\":\"columnName\",\"alias\":\"Column Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnName\",\"width\":224.91428571428577},\"value\":{\"name\":\"value\",\"alias\":\"Value\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"value\",\"width\":210.8571428571428}},\"parentSettings\":{\"fk_MapperDetails_MasterHeader1\":{\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.masterHeaderID\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.idMasterMapper\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.fileImportDate\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.filename\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.content\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.processCSVFlag\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_MapperDetails_MasterHeader1.processTableFlag\",\"parentRole\":\"fk_MapperDetails_MasterHeader1\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"processCSVHeaderFlag\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"columnSeparator\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"countDetailRows\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"detailerrorsList\":{\"name\":\"detailerrorsList\",\"tableName\":\"main:detailerrors\",\"alias\":\"Detailerrors\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"detailErrorsID\":{\"name\":\"detailErrorsID\",\"alias\":\"Detail Errors ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"detailErrorsID\",\"width\":54.666666666666664},\"MapperHeaderID\":{\"name\":\"MapperHeaderID\",\"alias\":\"Mapper Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"MapperHeaderID\"},\"ErrorMessage\":{\"name\":\"ErrorMessage\",\"alias\":\"Error Message\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ErrorMessage\",\"width\":218.66666666666666},\"JSONContent\":{\"name\":\"JSONContent\",\"alias\":\"JSONContent\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"JSONContent\",\"width\":218.66666666666666}},\"downloadable\":false,\"gridColumns\":{\"detailErrorsID\":{\"name\":\"detailErrorsID\",\"alias\":\"Detail Errors ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"detailErrorsID\",\"width\":54.666666666666664},\"ErrorMessage\":{\"name\":\"ErrorMessage\",\"alias\":\"Error Message\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ErrorMessage\",\"width\":218.66666666666666},\"JSONContent\":{\"name\":\"JSONContent\",\"alias\":\"JSONContent\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"JSONContent\",\"width\":218.66666666666666}},\"parentSettings\":{\"fk_details_has_errors\":{\"alias\":\"main:masterheader\",\"columnFormats\":{\"masterHeaderID\":{\"name\":\"masterHeaderID\",\"alias\":\"Master Header ID\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.masterHeaderID\",\"parentRole\":\"fk_details_has_errors\"},\"idMasterMapper\":{\"name\":\"idMasterMapper\",\"alias\":\"Id Master Mapper\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.idMasterMapper\",\"parentRole\":\"fk_details_has_errors\"},\"fileImportDate\":{\"name\":\"fileImportDate\",\"alias\":\"File Import Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.fileImportDate\",\"parentRole\":\"fk_details_has_errors\"},\"filename\":{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.filename\",\"parentRole\":\"fk_details_has_errors\"},\"content\":{\"name\":\"content\",\"alias\":\"Content\",\"type\":\"BLOB\",\"generic_type\":\"binary\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.content\",\"parentRole\":\"fk_details_has_errors\"},\"processCSVFlag\":{\"name\":\"processCSVFlag\",\"alias\":\"Process CSVFlag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processCSVFlag\",\"parentRole\":\"fk_details_has_errors\"},\"processTableFlag\":{\"name\":\"processTableFlag\",\"alias\":\"Process Table Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processTableFlag\",\"parentRole\":\"fk_details_has_errors\"},\"processCSVHeaderFlag\":{\"name\":\"processCSVHeaderFlag\",\"alias\":\"Process CSVHeader Flag\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.processCSVHeaderFlag\",\"parentRole\":\"fk_details_has_errors\"},\"columnSeparator\":{\"name\":\"columnSeparator\",\"alias\":\"Column Separator\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"is_nullable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.columnSeparator\",\"parentRole\":\"fk_details_has_errors\"},\"countDetailRows\":{\"name\":\"countDetailRows\",\"alias\":\"Count Detail Rows\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"is_nullable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.fk_details_has_errors.countDetailRows\",\"parentRole\":\"fk_details_has_errors\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[{\"title\":\"Create a new Record and the Upload the content.\",\"columns\":[\"fk_MasterHeader_MasterMapper1/MapName\",\"filename\",\"fileImportDate\",\"content\",\"processCSVHeaderFlag\",\"processCSVFlag\",\"processTableFlag\",\"columnSeparator\",\"countDetailRows\"],\"$$hashKey\":\"0ZA\"}],\"labelPlacement\":\"Left\",\"expressedTitle\":\"Form Title\"}",
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1010",
-              "checksum": "A:aa5b31dc1ab8daf0"
+              "checksum": "A:8fdd4d52cd6673ce"
             }
           },
           {
             "ident": 1011,
-            "ts": "2015-04-27T17:46:39.684487Z",
+            "ts": "2015-04-27T21:46:39.684487Z",
             "table_name": "main:inventoryfba",
             "object_type": "table",
             "table_alias": null,
@@ -1168,12 +1133,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1011",
-              "checksum": "A:a1d0418091b09885"
+              "checksum": "A:9d6bc6fea2e8d1be"
             }
           },
           {
             "ident": 1012,
-            "ts": "2015-04-27T17:46:39.684553Z",
+            "ts": "2015-04-27T21:46:39.684553Z",
             "table_name": "main:validdatatypes",
             "object_type": "table",
             "table_alias": null,
@@ -1182,12 +1147,12 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1012",
-              "checksum": "A:748ef5b22717e8b1"
+              "checksum": "A:a2e22ab00c8f68ea"
             }
           },
           {
             "ident": 1013,
-            "ts": "2015-04-30T10:55:49.129017Z",
+            "ts": "2015-04-30T14:55:49.129017Z",
             "table_name": "main:detailerrors",
             "object_type": "table",
             "table_alias": null,
@@ -1196,7 +1161,7 @@
             "app_ident": 1001,
             "@metadata": {
               "href": "http://localhost:8080/KahunaService/rest/abl/admin/v2/ProjectExport.Applications.ApplicationTableSettings/1013",
-              "checksum": "A:ac40e65c1433a6c0"
+              "checksum": "A:315826596d6eaa63"
             }
           }
         ]
